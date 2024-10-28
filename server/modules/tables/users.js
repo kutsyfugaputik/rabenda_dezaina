@@ -33,10 +33,7 @@ const Users = sequelize.define('Users', {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+ 
     birhtday: {
       type: DataTypes.DATE,
       allowNull: false,

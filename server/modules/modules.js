@@ -15,7 +15,7 @@ module.exports = {
   Clients,
   Masters,
   Services,
-  Discounts,
+  Discounts, 
   Requests,
   Statuses,
   Feedback,

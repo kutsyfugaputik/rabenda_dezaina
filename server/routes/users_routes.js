@@ -4,10 +4,10 @@ const userController = require('../controllers/userController'); // Импорт
 
 
 // Роуты для операций с пользователями
-router.get('/',userController.getAllUsers); // Получить всех пользователей (с авторизацией)
-router.get('/:id',  userController.getUserById); // Получить пользователя по ID (с авторизацией)
-router.post('/', userController.createUser); // Создать нового пользователя
-router.put('/:id',  userController.updateUser); // Обновить данные пользователя (с авторизацией)
-router.delete('/:id',  userController.deleteUser); // Удалить пользователя (с авторизацией)
+router.get('/',userController.getAll); // Получить всех пользователей (с авторизацией)
+//router.get('/:id',  userController.getById); // Получить пользователя по ID (с авторизацией)
+//router.post('/', userController.create); // Создать нового пользователя
+//router.put('/:id',  userController.update); // Обновить данные пользователя (с авторизацией)
+//router.delete('/:id',  userController.delete); // Удалить пользователя (с авторизацией)
 
 module.exports = router;

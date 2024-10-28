@@ -1,5 +1,5 @@
-const { Feedback } = require('../modules/tables/feedback');
-const ApiError = require('../error/ApiError.js');
+const { Feedback } = require('../modules/modules');
+const ApiError = require('../error/ApiError');
 
 class FeedbackController {
     async create(req, res) {

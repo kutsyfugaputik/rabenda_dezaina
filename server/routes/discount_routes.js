@@ -1,8 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const discountController = require('../controllers/discountController');
+
 // Роуты для мастеров
-router.get('/', feedbackController.getAllMasters); // Получить всех мастеров
-router.get('/:id', feedbackController.getMasterById); // Получить мастера по ID
-router.post('/', authMiddleware, feedbackController.createMaster); // Создать мастера
-router.put('/:id', authMiddleware, feedbackController.updateMaster); // Обновить мастера
-router.delete('/:id', authMiddleware, feedbackController.deleteMaster); // Удалить мастера
+router.get('/', discountController.getAll); // Получить всех мастеров
+router.get('/:id', discountController.getById); // Получить мастера по ID
+router.post('/', discountController.create); // Создать мастера
+
 
 module.exports = router;

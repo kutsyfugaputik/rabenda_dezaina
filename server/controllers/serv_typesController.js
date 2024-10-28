@@ -1,21 +1,21 @@
-const { ServiceType } = require('../modules/tables/serv_types');
-const ApiError = require('../error/ApiError.js');
+const { ServiceTypes } = require('../modules/modules');
+const ApiError = require('../error/ApiError');
 
 class ServiceTypeController {
     async create(req, res) {
         const { name, description } = req.body;
-        const serviceType = await ServiceType.create({ name, description });
+        const serviceType = await ServiceTypes.create({ name, description });
         return res.json(serviceType);
     }
 
     async getAll(req, res) {
-        const serviceTypes = await ServiceType.findAll();
+        const serviceTypes = await ServiceTypes.findAll();
         return res.json(serviceTypes);
     }
 
     async getById(req, res, next) {
         const { id } = req.params;
-        const serviceType = await ServiceType.findOne({ where: { id } });
+        const serviceType = await ServiceTypes.findOne({ where: { id } });
         if (!serviceType) {
             return next(ApiError.notFound('Service Type not found'));
         }

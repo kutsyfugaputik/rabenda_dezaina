@@ -41,10 +41,7 @@ const Services = sequelize.define('Services', {
         key: 'master_id',
       },
     },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+
   }, {
     tableName: 'services',
     timestamps: false,
