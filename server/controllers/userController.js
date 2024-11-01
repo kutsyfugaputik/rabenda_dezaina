@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { Clients } = require('../modules/modules');
 
-async function register(req, res) {
+class userController{
+async  register(req, res) {
   const { first_name, last_name, father_name, email, phone, password } = req.body;
   
   try {
@@ -19,7 +20,7 @@ async function register(req, res) {
   }
 }
 
-async function login(req, res) {
+async  login(req, res) {
   const { email, password } = req.body;
   
   try {
@@ -36,11 +37,11 @@ async function login(req, res) {
   }
 }
 
-async function logout(req, res) {
+async  logout(req, res) {
   // Usually handled on the client side by removing the token, so here we just send a confirmation
   res.json({ message: 'Выход выполнен' });
 }
-
+}
 module.exports = {
   register,
   login,
