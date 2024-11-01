@@ -2,11 +2,7 @@ const { Discounts } = require('../modules/modules');
 const ApiError = require('../error/ApiError');
 
 class DiscountController {
-    async create(req, res) {
-        const { name, percentage, description, start_date, end_date } = req.body;
-        const discount = await Discounts.create({ name, percentage, description, start_date, end_date });
-        return res.json(discount);
-    }
+    
 
     async getAll(req, res) {
         const discounts = await Discounts.findAll();

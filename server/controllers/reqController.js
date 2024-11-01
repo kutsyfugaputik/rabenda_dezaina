@@ -1,28 +1,109 @@
-const { Requests } = require('../modules/modules');
-const ApiError = require('../error/ApiError');
+// controllers/requestsController.js
+const { Request, Status, Feedback, Discount, Service, Client } = require('../modules/modules');
+class requestsController{
 
-class RequestController {
-    async create(req, res) {
-        const { feedback_id, discount_id, service_id, status_id, start_time, end_time, price, client_id } = req.body;
-        const request = await Requests.create({
-            feedback_id, discount_id, service_id, status_id, start_time, end_time, price, client_id
-        });
-        return res.json(request);
-    }
+// 1. Создание новой заявки
+async createRequest(req, res) {
+  const { clientId, serviceId, startTime, endTime, price, discountId } = req.body;
 
-    async getAll(req, res) {
-        const requests = await Requests.findAll();
-        return res.json(requests);
-    }
+  try {
+    const newRequest = await Request.create({
+      client_id: clientId,
+      service_id: serviceId,
+      start_time: startTime,
+      end_time: endTime,
+      price,
+      price_without_discount: price, // изначально без учета скидки
+      discount_id: discountId,
+      created_at: new Date(),
+      confirmation: false,
+    });
 
-    async getById(req, res, next) {
-        const { id } = req.params;
-        const request = await Requests.findOne({ where: { id } });
-        if (!request) {
-            return next(ApiError.notFound('Request not found'));
-        }
-        return res.json(request);
-    }
+    res.status(201).json(newRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка при создании заявки' });
+  }
 }
 
-module.exports = new RequestController();
+// 2. Обновление заявки на "завершена"
+async updateToComplete(req, res) {
+  const { requestId } = req.params;
+
+  try {
+    const request = await Request.findByPk(requestId);
+    if (!request) {
+      return res.status(404).json({ message: 'Заявка не найдена' });
+    }
+
+    await request.update({ status_id: 1, end_time: new Date() });
+    res.json({ message: 'Заявка успешно завершена' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка при обновлении заявки' });
+  }
+}
+
+// 3. Обновление заявки на "отменена"
+async updateToCanceled(req, res) {
+  const { requestId } = req.params;
+
+  try {
+    const request = await Request.findByPk(requestId);
+    if (!request) {
+      return res.status(404).json({ message: 'Заявка не найдена' });
+    }
+
+    await request.update({ status_id:2, canceled_at: new Date() });
+    res.json({ message: 'Заявка успешно отменена' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка при отмене заявки' });
+  }
+}
+
+// 4. Обновление заявки на "подтверждена"
+async updateToConfirm(req, res) {
+  const { requestId } = req.params;
+
+  try {
+    const request = await Request.findByPk(requestId);
+    if (!request) {
+      return res.status(404).json({ message: 'Заявка не найдена' });
+    }
+
+    await request.update({ confirmation: true, status_id: 3 });
+    res.json({ message: 'Заявка успешно подтверждена' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка при подтверждении заявки' });
+  }
+}
+
+// 5. Получение информации о заявке
+async getRequest(req, res) {
+  const { requestId } = req.params;
+
+  try {
+    const request = await Request.findByPk(requestId, {
+      include: [
+        { model: Service, attributes: ['name', 'price', 'duration'] },
+        { model: Client, attributes: ['user_id'] },
+        { model: Feedback, attributes: ['rating', 'text'] },
+        { model: Discount, attributes: ['name', 'percentage'] },
+        { model: Status, attributes: ['name', 'description'] }
+      ]
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: 'Заявка не найдена' });
+    }
+
+    res.json(request);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка при получении заявки' });
+  }
+}
+}
+module.exports = requestsController;

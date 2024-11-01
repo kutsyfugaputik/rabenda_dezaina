@@ -1,17 +1,25 @@
-const { Clients } = require('../modules/modules');
-const ApiError = require('../error/ApiError');
- 
-class ClientsController {
+// controllers/clientsController.js
+const { Client, User } = require('../models');
 
+class clientsController{
+async  getClientProfile(req, res) {
+  const userId = req.user.id;
+  
+  try {
+    const client = await Client.findOne({
+      where: { user_id: userId },
+      include: [{ model: User, attributes: ['first_name', 'last_name', 'email', 'phone'] }]
+    });
 
-    async getById(req, res, next) {
-        const { id } = req.params;
-        const clients = await Clients.findOne({ where: { id } });
-        if (!clients) {
-            return next(ApiError.notFound('Service Type not found'));
-        }
-        return res.json(clients);
+    if (!client) {
+      return res.status(404).json({ message: 'Клиент не найден' });
     }
-}
 
-module.exports = new ClientsController();
+    res.json(client);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+}
+}
+module.exports = clientsController;
