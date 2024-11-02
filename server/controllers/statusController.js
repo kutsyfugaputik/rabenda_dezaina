@@ -2,11 +2,7 @@ const { Statuses } = require('../modules/modules');
 const ApiError = require('../error/ApiError');
 
 class StatusController {
-    async create(req, res) {
-        const { name, description } = req.body;
-        const status = await Statuses.create({ name, description });
-        return res.json(status);
-    }
+    
 
     async getAll(req, res) {
         const statuses = await Statuses.findAll();

@@ -2,11 +2,7 @@ const { ServiceTypes } = require('../modules/modules');
 const ApiError = require('../error/ApiError');
 
 class ServiceTypeController {
-    async create(req, res) {
-        const { name, description } = req.body;
-        const serviceType = await ServiceTypes.create({ name, description });
-        return res.json(serviceType);
-    }
+    
 
     async getAll(req, res) {
         const serviceTypes = await ServiceTypes.findAll();

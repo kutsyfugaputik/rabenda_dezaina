@@ -1,50 +1,34 @@
 const { Masters } = require('../modules/modules');
 const ApiError = require('../error/ApiError');
 
-class MasterController {
+class masterController {
     async create(req, res) {
         const { user_id, specialization, years_of_experience, work_examples } = req.body;
         const master = await Masters.create({ user_id, specialization, years_of_experience, work_examples });
         return res.json(master);
     }
 
-    async Rating(req, res) {
-        const { masterId } = req.params;
-
-  try {
-    const query = `
-      SELECT AVG(f.rating) AS average_rating
-      FROM masters m
-      JOIN services s ON m.master_id = s.master_id
-      JOIN requests r ON s.service_id = r.service_id
-      JOIN feedback f ON r.request_id = f.request_id
-      WHERE r.status_id = 3 AND m.master_id = $1
-      GROUP BY m.master_id
-    `;
-    
-    const result = await pool.query(query, [masterId]);
-
-    if (result.rows.length > 0) {
-      res.status(200).json({ masterId, averageRating: result.rows[0].average_rating });
-    } else {
-      res.status(404).json({ message: 'Rating not found for this master' });
-    }
-  } catch (error) {
-    console.error('Error fetching master rating:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-}
-    
-
-    async getById(req, res, next) {
-        const { id } = req.params;
-        const master = await Masters.findOne({ where: { id } });
+    async  getAverageRating(req, res) {
+      const userId = req.user.id;
+      
+      try {
+        const master = await Master.findOne({ where: { user_id: userId } });
         if (!master) {
-            return next(ApiError.notFound('Master not found'));
+          return res.status(404).json({ message: 'Мастер не найден' });
         }
-        return res.json(master);
+    
+        const requests = await master.getRequests({ include: ['feedback'] });
+        const ratings = requests.map(req => req.feedback?.rating).filter(rating => rating != null);
+    
+        const averageRating = ratings.length ? ratings.reduce((sum, rate) => sum + rate, 0) / ratings.length : 'нет оценки';
+        
+        res.json({ averageRating });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Ошибка сервера' });
+      }
     }
-
-}
-module.exports = MasterController();
+    
+   }
+module.exports = new masterController();
 

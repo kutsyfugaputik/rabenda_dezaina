@@ -1,6 +1,6 @@
 // middlewares/roleMiddleware.js
-const Client = require('../models/Client');
-const Master = require('../models/Master');
+const Client = require('../modules/modules');
+const Master = require('../modules/modules');
 
 // roleMiddleware принимает нужную роль для доступа к ресурсу
 function roleMiddleware(requiredRole) {
