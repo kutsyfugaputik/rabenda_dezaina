@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const masterController = require('../controllers/masterController');
+const authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
+// Получение профиля мастера (только для мастера)
+//router.get('/profile', authMiddleware, roleMiddleware('master'), masterController.getProfile);
 
-// Роуты для мастеров
-router.get('/', masterController.getAll); // Получить всех мастеров
-router.get('/:id', masterController.getById); // Получить мастера по ID
-router.post('/',  masterController.create); // Создать мастера
-
+// Получение среднего рейтинга мастера (только для мастера)
+router.get('/rating', authMiddleware, roleMiddleware('client'), masterController.getAverageRating);
 
 module.exports = router;
