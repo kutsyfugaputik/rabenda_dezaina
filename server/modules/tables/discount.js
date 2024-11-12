@@ -1,39 +1,64 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db'); // Adjust path if necessary
+const { DataTypes } = require('sequelize'); 
+// Из модуля 'sequelize' импортируем объект DataTypes, который содержит типы данных для создания полей в таблице.
 
+const sequelize = require('../db'); 
+// Подключаем экземпляр Sequelize, который настроен для взаимодействия с базой данных. Путь к файлу конфигурации может быть другим, в зависимости от структуры проекта.
 
 
 // Discounts Model
-const Discounts = sequelize.define('Discounts', {
-    discount_id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+const Discounts = sequelize.define('Discounts', { 
+  // Определяем модель для таблицы 'Discounts'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
+
+    discount_id: { 
+      type: DataTypes.INTEGER, 
+      // Тип данных для поля 'discount_id' — целое число.
+      autoIncrement: true, 
+      // Устанавливаем автоинкремент, чтобы значение 'discount_id' увеличивалось автоматически при добавлении новой записи.
+      primaryKey: true, 
+      // Устанавливаем это поле как первичный ключ.
     },
-  
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
+
+    name: { 
+      type: DataTypes.STRING(100), 
+      // Тип данных для поля 'name' — строка длиной до 100 символов.
+      allowNull: false, 
+      // Указываем, что это поле обязательно для заполнения.
     },
-    percentage: {
-      type: DataTypes.DECIMAL(5, 2),
-      allowNull: false,
+
+    percentage: { 
+      type: DataTypes.DECIMAL(5, 2), 
+      // Тип данных для поля 'percentage' — десятичное число с точностью до 2 знаков после запятой (для хранения процентного значения скидки).
+      allowNull: false, 
+      // Указываем, что это поле обязательно для заполнения.
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
+
+    description: { 
+      type: DataTypes.TEXT, 
+      // Тип данных для поля 'description' — текст. Это поле может содержать большие объемы информации.
+      allowNull: true, 
+      // Поле 'description' не обязательно для заполнения.
     },
-    start_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
+
+    start_date: { 
+      type: DataTypes.DATE, 
+      // Тип данных для поля 'start_date' — дата (начало действия скидки).
+      allowNull: true, 
+      // Поле 'start_date' не обязательно для заполнения.
     },
-    end_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
+
+    end_date: { 
+      type: DataTypes.DATE, 
+      // Тип данных для поля 'end_date' — дата (конец действия скидки).
+      allowNull: true, 
+      // Поле 'end_date' не обязательно для заполнения.
     },
+
   }, {
-    tableName: 'discounts',
-    timestamps: false,
+    tableName: 'discounts', 
+    // Устанавливаем название таблицы в базе данных, которое будет соответствовать модели. Здесь таблица называется 'discounts'.
+    timestamps: false, 
+    // Указываем, что не нужно автоматически добавлять столбцы 'createdAt' и 'updatedAt' (для отслеживания времени создания и последнего обновления записи).
   });
   
-  module.exports = Discounts;
+  module.exports = Discounts; 
+  // Экспортируем модель 'Discounts' для использования в других частях приложения.

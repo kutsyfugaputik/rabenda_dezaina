@@ -1,26 +1,43 @@
 // controllers/userController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, Clients } = require('../modules/modules');
+const moment = require('moment');
+const { Users, Clients } = require('../modules/modules');
 
 class userController {
   async register(req, res) {
-    const { first_name, last_name, father_name, email, phone, password } = req.body;
+    let { first_name, last_name, father_name, email, phone, birhtday, password } = req.body;
+    console.log(req.body);
+    if (!password) {
+      return res.status(400).json({ message: 'Пароль обязателен' });
+    }
+
+    // Проверка и форматирование даты
+    if (birhtday) {
+      const formattedDate = moment(birhtday, 'DD.MM.YYYY', true);
+      if (!formattedDate.isValid()) {
+        return res.status(400).json({ message: 'Неверный формат даты рождения' });
+      }
+      birhtday = formattedDate.format('YYYY-MM-DD');
+    }
+
 
     try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await User.create({
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      const newUser = await Users.create({
         first_name,
         last_name,
         father_name,
         email,
         phone,
+        birhtday,  // Corrected field name
         password: hashedPassword
       });
-      
-      const newClient = await Clients.create({ user_id: newUser.user_id });
-      
+      const Client = await Clients.create({user_id:newUser.user_id});
       res.status(201).json(newUser);
+      res.status(201).json(Client);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Ошибка сервера' });
@@ -31,7 +48,7 @@ class userController {
     const { email, password } = req.body;
 
     try {
-      const user = await User.findOne({ where: { email } });
+      const user = await Users.findOne({ where: { email } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: 'Неверный email или пароль' });
       }
@@ -45,7 +62,6 @@ class userController {
   }
 
   async logout(req, res) {
-    // Обычно обработка выхода происходит на клиенте, удаляя токен
     res.json({ message: 'Выход выполнен' });
   }
 }

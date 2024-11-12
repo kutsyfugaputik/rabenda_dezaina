@@ -1,23 +1,43 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db'); // Adjust path if necessary
+const { DataTypes } = require('sequelize'); 
+// Из модуля 'sequelize' импортируем объект DataTypes, который содержит типы данных для создания полей в таблице.
 
-const Statuses = sequelize.define('Statuses', {
-    status_id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+const sequelize = require('../db'); 
+// Подключаем экземпляр Sequelize, который настроен для взаимодействия с базой данных. Путь к файлу конфигурации может быть другим, в зависимости от структуры проекта.
+
+
+// Statuses Model
+const Statuses = sequelize.define('Statuses', { 
+  // Определяем модель для таблицы 'Statuses'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
+
+    status_id: { 
+      type: DataTypes.INTEGER, 
+      // Тип данных для поля 'status_id' — целое число.
+      autoIncrement: true, 
+      // Устанавливаем автоинкремент, чтобы значение 'status_id' увеличивалось автоматически при добавлении новой записи.
+      primaryKey: true, 
+      // Устанавливаем это поле как первичный ключ.
     },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
+
+    name: { 
+      type: DataTypes.STRING(100), 
+      // Тип данных для поля 'name' — строка длиной до 100 символов.
+      allowNull: false, 
+      // Указываем, что это поле обязательно для заполнения.
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
+
+    description: { 
+      type: DataTypes.TEXT, 
+      // Тип данных для поля 'description' — текстовое поле (неограниченная длина).
+      allowNull: true, 
+      // Указываем, что это поле может быть пустым.
     },
+
   }, {
-    tableName: 'statuses',
-    timestamps: false,
+    tableName: 'statuses', 
+    // Устанавливаем название таблицы в базе данных, которое будет соответствовать модели. Здесь таблица называется 'statuses'.
+    timestamps: false, 
+    // Указываем, что не нужно автоматически добавлять столбцы 'createdAt' и 'updatedAt' (для отслеживания времени создания и последнего обновления записи).
   });
-  
-  module.exports = Statuses;
+
+  module.exports = Statuses; 
+  // Экспортируем модель 'Statuses' для использования в других частях приложения.

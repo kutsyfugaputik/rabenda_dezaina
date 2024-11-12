@@ -8,6 +8,7 @@ class masterController {
         return res.json(master);
     }
 
+    
     async  getAverageRating(req, res) {
       const userId = req.user.id;
       

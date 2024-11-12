@@ -1,28 +1,44 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db'); // Adjust path if necessary
+const { DataTypes } = require('sequelize'); 
+// Из модуля 'sequelize' импортируем объект DataTypes, который содержит типы данных для создания полей в таблице.
 
-const Users = require('./users');
+const sequelize = require('../db'); 
+// Подключаем экземпляр Sequelize, который настроен для взаимодействия с базой данных. Путь к файлу конфигурации может быть другим, в зависимости от структуры проекта.
 
+const Users = require('./users'); 
+// Подключаем модель 'Users', чтобы использовать её при создании связи между таблицами 'clients' и 'users'.
 
 // Clients Model
-const Clients = sequelize.define('Clients', {
-    client_id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+const Clients = sequelize.define('Clients', { 
+  // Определяем модель для таблицы 'Clients'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
+
+    client_id: { 
+      type: DataTypes.INTEGER, 
+      // Тип данных для поля 'client_id' — целое число.
+      autoIncrement: true, 
+      // Устанавливаем автоинкремент, чтобы значение 'client_id' увеличивалось автоматически при добавлении новой записи.
+      primaryKey: true, 
+      // Устанавливаем это поле как первичный ключ.
     },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Users,
-        key: 'user_id',
+
+    user_id: { 
+      type: DataTypes.INTEGER, 
+      // Тип данных для поля 'user_id' — целое число, которое будет ссылаться на идентификатор пользователя в таблице 'users'.
+      allowNull: false, 
+      // Указываем, что это поле обязательно для заполнения (не может быть пустым).
+      references: { 
+        model: Users, 
+        // Указываем, что это поле будет ссылаться на модель 'Users'.
+        key: 'user_id', 
+        // Указываем, что оно будет ссылаться на поле 'user_id' в таблице 'users'.
       },
     },
-   
+
   }, {
-    tableName: 'clients',
-    timestamps: false,
+    tableName: 'clients', 
+    // Устанавливаем название таблицы в базе данных, которое будет соответствовать модели. Здесь таблица называется 'clients'.
+    timestamps: false, 
+    // Указываем, что не нужно автоматически добавлять столбцы 'createdAt' и 'updatedAt' (для отслеживания времени создания и последнего обновления записи).
   });
-  
-  module.exports = Clients;
+
+  module.exports = Clients; 
+  // Экспортируем модель 'Clients' для использования в других частях приложения.
