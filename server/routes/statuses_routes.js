@@ -1,11 +1,17 @@
-const express = require('express');
-const router = express.Router();
-const statusController = require('../controllers/statusController');
-
+const express = require('express'); // Импортируем библиотеку express для создания маршрутов
+const router = express.Router(); // Создаем новый экземпляр маршрутизатора
+const statusController = require('../controllers/statusController'); // Импортируем контроллер для работы со статусами
 
 // Роуты для статусов
-router.get('/', statusController.getAll); // Получить все статусы
-router.get('/:id', statusController.getById); // Получить статус по ID
 
+// Роут для получения всех статусов
+router.get('/', statusController.getAll); 
+// Этот маршрут вызывает метод getAll из контроллера, который возвращает список всех статусов.
 
-module.exports = router;
+// Роут для получения статуса по ID
+router.get('/:id', statusController.getById); 
+// Этот маршрут вызывает метод getById из контроллера, который возвращает статус по переданному ID.
+// В запросе передается ID статуса, который будет использован для поиска в базе данных.
+
+module.exports = router; 
+// Экспортируем маршрутизатор, чтобы он был доступен в других частях приложения

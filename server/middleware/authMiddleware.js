@@ -1,20 +1,45 @@
-// middlewares/authMiddleware.js
+// Импортируем библиотеку jwt для работы с JSON Web Tokens
 const jwt = require('jsonwebtoken');
 
 function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1]; // Ожидаем формат 'Bearer <token>'
+    // Логируем начало работы middleware
+    console.log('Запрос на проверку авторизации через JWT');
 
-  if (!token) {
-    return res.status(401).json({ message: 'Необходима авторизация' });
-  }
+    const token = req.headers.authorization?.split(' ')[1]; 
+    // Извлекаем токен из заголовка `Authorization`.
+    // Ожидается формат 'Bearer <токен>', поэтому берем вторую часть строки после разделения пробелом.
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.id }; // Добавляем userId в req
-    next();
-  } catch (error) {
-    res.status(401).json({ message: 'Неверный токен' });
-  }
+    // Логируем, получен ли токен
+    console.log('Полученный токен:', token);
+
+    if (!token) {
+        // Если токен отсутствует, возвращаем ошибку авторизации.
+        console.log('Ошибка: Токен не найден');
+        return res.status(401).json({ message: 'Необходима авторизация' });
+        // Код 401 означает, что доступ запрещён из-за отсутствия авторизации.
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Пытаемся декодировать токен с помощью секретного ключа (process.env.JWT_SECRET).
+        // Если токен недействителен, будет выброшено исключение.
+
+        // Логируем успешное декодирование токена
+        console.log('Токен успешно декодирован:', decoded);
+
+        req.user = { id: decoded.id }; 
+        // Если токен валиден, добавляем идентификатор пользователя (`id`) из токена в объект `req`.
+        // Это позволит использовать данные пользователя в последующих middleware или обработчиках.
+
+        next(); 
+        // Если проверка успешна, передаем управление следующему middleware или обработчику запроса.
+    } catch (error) {
+        // Если произошла ошибка при проверке токена (например, он истёк или подделан):
+        console.log('Ошибка при проверке токена:', error);
+        res.status(401).json({ message: 'Неверный токен' });
+        // Возвращаем ошибку с кодом 401 и сообщением о недействительности токена.
+    }
 }
 
 module.exports = authMiddleware;
+// Экспортируем middleware для использования в других файлах.

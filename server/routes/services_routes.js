@@ -1,10 +1,17 @@
-const express = require('express');
-const router = express.Router();
-const serviceController = require('../controllers/serviceController'); // Импортируем контроллер для услуг
-
+const express = require('express'); // Импортируем библиотеку express для создания маршрутов
+const router = express.Router(); // Создаем новый экземпляр маршрутизатора
+const serviceController = require('../controllers/serviceController'); // Импортируем контроллер для работы с услугами
 
 // Роуты для операций с услугами
-router.get('/', serviceController.getAll); // Получить все услуги
-router.get('/:id', serviceController.getById); // Получить услугу по ID авторизацией)
 
-module.exports = router;
+// Роут для получения всех услуг
+router.get('/', serviceController.getAll); 
+// Этот маршрут вызывает метод getAll из контроллера, который возвращает список всех услуг.
+
+// Роут для получения услуги по ID
+router.get('/:id', serviceController.getById); 
+// Этот маршрут вызывает метод getById из контроллера, который возвращает услугу по переданному ID.
+// В запросе передается ID услуги, который будет использован для поиска в базе данных.
+
+module.exports = router; 
+// Экспортируем маршрутизатор, чтобы он был доступен в других частях приложения

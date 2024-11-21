@@ -1,5 +1,4 @@
-const sequelize = require('../modules/db'); // Adjust path if needed
-// Подключаем объект 'sequelize' из модуля db для взаимодействия с базой данных.
+const sequelize = require('../modules/db'); // Подключаем объект 'sequelize' для взаимодействия с базой данных.
 
 const ServiceTypes = require('../modules/tables/serv_types');
 const Users = require('../modules/tables/users');
@@ -10,10 +9,9 @@ const Discounts = require('../modules/tables/discount');
 const Statuses = require('../modules/tables/statuses');
 const Feedback = require('../modules/tables/feedback');
 const Requests = require('../modules/tables/reqs');
-// Импортируем модели для всех таблиц, которые мы будем использовать в ассоциациях.
+// Импортируем все модели для работы с таблицами, с которыми будем работать в ассоциациях.
 
-
-// Export the models
+// Экспортируем модели, чтобы их можно было использовать в других частях проекта.
 module.exports = {
   Users,
   Clients,
@@ -25,55 +23,50 @@ module.exports = {
   Feedback,
   ServiceTypes,
 };
-// Экспортируем все модели, чтобы они были доступны для использования в других частях проекта.
 
-
-// Define associations first
+// Функция для определения ассоциаций между моделями
 const defineAssociations = () => {
-  // Associations
+  // Логируем начало процесса установки ассоциаций
+  console.log('Начинаем устанавливать ассоциации между моделями.');
+
+  // Связь один к одному между 'Users' и 'Clients'
   Users.hasOne(Clients, { foreignKey: 'user_id' });
-  // Устанавливаем связь один к одному между 'Users' и 'Clients', где поле 'user_id' является внешним ключом в таблице 'Clients'.
-
-  Users.hasOne(Masters, { foreignKey: 'user_id' });
-  // Устанавливаем связь один к одному между 'Users' и 'Masters', где поле 'user_id' является внешним ключом в таблице 'Masters'.
-
   Clients.belongsTo(Users, { foreignKey: 'user_id' });
-  // Устанавливаем связь многие к одному между 'Clients' и 'Users', где 'user_id' в таблице 'Clients' ссылается на 'Users'.
+  console.log('Установлена ассоциация между Users и Clients.');
 
+  // Связь один к одному между 'Users' и 'Masters'
+  Users.hasOne(Masters, { foreignKey: 'user_id' });
   Masters.belongsTo(Users, { foreignKey: 'user_id' });
-  // Устанавливаем связь многие к одному между 'Masters' и 'Users', где 'user_id' в таблице 'Masters' ссылается на 'Users'.
+  console.log('Установлена ассоциация между Users и Masters.');
 
+  // Связь один ко многим между 'Masters' и 'Services'
   Masters.hasMany(Services, { foreignKey: 'master_id' });
-  // Устанавливаем связь один ко многим между 'Masters' и 'Services', где 'master_id' является внешним ключом в таблице 'Services'.
-
-  Services.belongsTo(ServiceTypes, { foreignKey: 'service_type_id' });
-  // Устанавливаем связь многие к одному между 'Services' и 'ServiceTypes', где 'service_type_id' в таблице 'Services' ссылается на 'ServiceTypes'.
-
   Services.belongsTo(Masters, { foreignKey: 'master_id' });
-  // Устанавливаем связь многие к одному между 'Services' и 'Masters', где 'master_id' в таблице 'Services' ссылается на 'Masters'.
+  console.log('Установлена ассоциация между Masters и Services.');
 
+  // Связь многие к одному между 'Services' и 'ServiceTypes'
+  Services.belongsTo(ServiceTypes, { foreignKey: 'service_type_id' });
+  console.log('Установлена ассоциация между Services и ServiceTypes.');
+
+  // Связь многие к одному между 'Requests' и другими сущностями
   Requests.belongsTo(Feedback, { foreignKey: 'feedback_id' });
-  // Устанавливаем связь многие к одному между 'Requests' и 'Feedback', где 'feedback_id' в таблице 'Requests' ссылается на 'Feedback'.
-
   Requests.belongsTo(Discounts, { foreignKey: 'discount_id' });
-  // Устанавливаем связь многие к одному между 'Requests' и 'Discounts', где 'discount_id' в таблице 'Requests' ссылается на 'Discounts'.
-
   Requests.belongsTo(Services, { foreignKey: 'service_id' });
-  // Устанавливаем связь многие к одному между 'Requests' и 'Services', где 'service_id' в таблице 'Requests' ссылается на 'Services'.
-
   Requests.belongsTo(Statuses, { foreignKey: 'status_id' });
-  // Устанавливаем связь многие к одному между 'Requests' и 'Statuses', где 'status_id' в таблице 'Requests' ссылается на 'Statuses'.
-
   Requests.belongsTo(Clients, { foreignKey: 'client_id' });
-  // Устанавливаем связь многие к одному между 'Requests' и 'Clients', где 'client_id' в таблице 'Requests' ссылается на 'Clients'.
+  console.log('Установлены ассоциации между Requests и Feedback, Discounts, Services, Statuses, Clients.');
 
+  // Связь один ко многим между 'Statuses' и 'Requests'
   Statuses.hasMany(Requests, { foreignKey: 'status_id' });
-  // Устанавливаем связь один ко многим между 'Statuses' и 'Requests', где 'status_id' в таблице 'Requests' ссылается на 'Statuses'.
+  console.log('Установлена ассоциация между Statuses и Requests.');
 
+  // Связь один к одному между 'Feedback' и 'Requests'
   Feedback.hasOne(Requests, { foreignKey: 'feedback_id' });
-  // Устанавливаем связь один к одному между 'Feedback' и 'Requests', где 'feedback_id' в таблице 'Requests' ссылается на 'Feedback'.
+  console.log('Установлена ассоциация между Feedback и Requests.');
+
+  // Логируем завершение процесса установки ассоциаций
+  console.log('Все ассоциации установлены.');
 };
 
-// Call the function to define associations
+// Вызываем функцию для установки ассоциаций
 defineAssociations();
-// Вызываем функцию для установления всех ассоциаций между моделями.

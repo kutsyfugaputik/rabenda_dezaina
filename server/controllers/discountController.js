@@ -1,22 +1,77 @@
-const { Discounts } = require('../modules/modules');
-const ApiError = require('../error/ApiError');
+const { Discounts } = require('../modules/modules'); 
+// Импортируем модель `Discounts` из файла `modules/modules`. 
+// Эта модель позволяет взаимодействовать с таблицей скидок в базе данных.
 
-class DiscountController {
-    
+const ApiError = require('../error/ApiError'); 
+// Импортируем объект `ApiError`, который, вероятно, является пользовательским классом ошибок. 
+// Он используется для создания ошибок с понятным сообщением и кодом.
 
-    async getAll(req, res) {
-        const discounts = await Discounts.findAll();
-        return res.json(discounts);
+class DiscountController { 
+    // Создаём класс `DiscountController`, который содержит методы для обработки запросов, связанных со скидками.
+
+    async getAll(req, res) { 
+        // Асинхронный метод для получения всех записей о скидках.
+
+        console.log('Запрос на получение всех скидок...');
+        // Логируем действие о начале получения всех скидок.
+
+        try {
+            const discounts = await Discounts.findAll(); 
+            // Используем метод `findAll` модели `Discounts` для извлечения всех записей из таблицы скидок.
+
+            console.log(`Найдено скидок: ${discounts.length}`);
+            // Логируем количество найденных записей.
+
+            return res.json(discounts); 
+            // Возвращаем все записи в виде JSON-объекта в ответ на запрос клиента.
+        } catch (error) {
+            console.error('Ошибка при получении всех скидок:', error);
+            // Логируем ошибку, если что-то пошло не так.
+
+            return res.status(500).json({ message: 'Ошибка сервера при получении всех скидок' });
+            // Возвращаем ошибку сервера клиенту.
+        }
     }
 
-    async getById(req, res, next) {
-        const { id } = req.params;
-        const discount = await Discounts.findOne({ where: { id } });
-        if (!discount) {
-            return next(ApiError.notFound('Discount not found'));
+    async getById(req, res, next) { 
+        // Асинхронный метод для получения конкретной скидки по её `id`.
+
+        console.log(`Запрос на получение скидки с ID: ${req.params.id}`);
+        // Логируем действие о начале получения конкретной скидки.
+
+        const { id } = req.params; 
+        // Извлекаем параметр `id` из URL запроса. Обычно это происходит через маршрут, например, `/discounts/:id`.
+
+        try {
+            const discount = await Discounts.findOne({ where: { id } }); 
+            // Используем метод `findOne` модели `Discounts` для поиска записи с указанным `id`.
+            // Условие поиска задаётся через объект `{ where: { id } }`.
+
+            if (!discount) { 
+                // Проверяем, существует ли запись с таким `id`.
+
+                console.warn(`Скидка с ID ${id} не найдена`);
+                // Логируем предупреждение, если запись не найдена.
+
+                return next(ApiError.notFound('Скидка не найдена')); 
+                // Если запись не найдена, вызываем следующий middleware с пользовательской ошибкой 404. 
+            }
+
+            console.log(`Скидка с ID ${id} найдена:`, discount);
+            // Логируем найденную запись.
+
+            return res.json(discount); 
+            // Если запись найдена, возвращаем её в формате JSON в ответ клиенту.
+        } catch (error) {
+            console.error(`Ошибка при получении скидки с ID ${id}:`, error);
+            // Логируем ошибку, если что-то пошло не так.
+
+            return res.status(500).json({ message: 'Ошибка сервера при получении скидки' });
+            // Возвращаем ошибку сервера клиенту.
         }
-        return res.json(discount);
     }
 }
 
-module.exports = new DiscountController();
+module.exports = new DiscountController(); 
+// Экспортируем экземпляр класса `DiscountController`.
+// Это позволяет использовать методы класса в маршрутах без необходимости вручную создавать экземпляр.

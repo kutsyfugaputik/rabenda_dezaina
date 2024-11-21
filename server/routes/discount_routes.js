@@ -1,10 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const discountController = require('../controllers/discountController');
+const express = require('express'); // Импортируем библиотеку express для работы с маршрутизацией
+const router = express.Router(); // Создаем новый объект маршрутизатора
+const discountController = require('../controllers/discountController'); // Импортируем контроллер скидок
 
-
+// Обработчик GET-запроса для получения всех скидок
 router.get('/', discountController.getAll); 
-router.get('/:id', discountController.getById); 
+// Когда приходит GET-запрос на /, вызывается метод getAll контроллера, который отвечает за получение всех скидок
 
-
-module.exports = router;
+module.exports = router; // Экспортируем роутер, чтобы его можно было использовать в других частях приложения
