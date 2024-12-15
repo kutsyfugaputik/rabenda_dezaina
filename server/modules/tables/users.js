@@ -9,7 +9,7 @@ const Users = sequelize.define('Users', {
   // Определяем модель для таблицы 'Users'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
 
     user_id: { 
-      type: DataTypes.INTEGER, 
+      type: DataTypes.UUID, 
       // Тип данных для поля 'user_id' — целое число.
       autoIncrement: true, 
       // Устанавливаем автоинкремент, чтобы значение 'user_id' увеличивалось автоматически при добавлении новой записи.

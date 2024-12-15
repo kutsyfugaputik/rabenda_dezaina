@@ -12,7 +12,7 @@ const Masters = sequelize.define('Masters', {
   // Определяем модель для таблицы 'Masters'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
 
     master_id: { 
-      type: DataTypes.INTEGER, 
+      type: DataTypes.UUID, 
       // Тип данных для поля 'master_id' — целое число.
       autoIncrement: true, 
       // Устанавливаем автоинкремент, чтобы значение 'master_id' увеличивалось автоматически при добавлении новой записи.

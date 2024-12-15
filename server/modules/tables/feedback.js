@@ -4,7 +4,7 @@ const sequelize = require('../db'); // Adjust path if necessary
  // Feedback Model
  const Feedback = sequelize.define('Feedback', {
     feedback_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       autoIncrement: true,
       primaryKey: true,
     },

@@ -25,7 +25,7 @@ const Requests = sequelize.define('Requests', {
   // Определяем модель для таблицы 'Requests'. Метод 'define' создаёт модель, которая будет соответствовать таблице в базе данных.
 
     request_id: { 
-      type: DataTypes.INTEGER, 
+    type: DataTypes.UUID, 
       // Тип данных для поля 'request_id' — целое число.
       autoIncrement: true, 
       // Устанавливаем автоинкремент, чтобы значение 'request_id' увеличивалось автоматически при добавлении новой записи.
