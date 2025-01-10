@@ -10,10 +10,10 @@ const Users = sequelize.define('Users', {
 
     user_id: { 
       type: DataTypes.UUID, 
-      // Тип данных для поля 'user_id' — целое число.
-      autoIncrement: true, 
-      // Устанавливаем автоинкремент, чтобы значение 'user_id' увеличивалось автоматически при добавлении новой записи.
-      primaryKey: true, 
+      // Тип данных для поля 'user_id' — UUID
+      defaultValue: sequelize.literal('uuid_generate_v4()'),
+      // Используем uuid_generate_v4(), встроенную функцию PostgreSQL для генерации UUID.
+           primaryKey: true, 
       // Устанавливаем это поле как первичный ключ.
     },
 
@@ -54,9 +54,9 @@ const Users = sequelize.define('Users', {
       // Поле 'password' обязательно для заполнения.
     },
 
-    birhtday: { 
+    birthday: { 
       type: DataTypes.DATE, 
-      // Поле 'birhtday' будет иметь тип данных DATE, то есть дата.
+      // Поле 'birthday' будет иметь тип данных DATE, то есть дата.
       allowNull: false, 
       // Поле 'birthday' обязательно для заполнения.
     },
