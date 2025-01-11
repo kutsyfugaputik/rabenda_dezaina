@@ -42,7 +42,7 @@ async def handle_back(message: Message):
     logging.info(f"Пользователь вернулся назад в меню")
     await message.answer(
         "Вы вернулись в главное меню;) Вам чем-нибудь еще помочь??",
-        reply_markup=kb.any_func,
+        reply_markup=kb.main,
     )
 
 # --- Обработчик текста с '@' ---
