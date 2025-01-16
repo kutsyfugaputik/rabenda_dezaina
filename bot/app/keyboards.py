@@ -28,12 +28,12 @@ async def create_questions_keyboard():
 # --- Main menu ---
 main = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Жалоба'), KeyboardButton(text='Мастера'), KeyboardButton(text='Вопросы')]
+        [KeyboardButton(text='Жалоба'), KeyboardButton(text='Мастера'), KeyboardButton(text='Компания'),KeyboardButton(text='Вопросы')]
     ],
     resize_keyboard=True,
     input_field_placeholder="Выберите необходимый пункт меню..."
 )
-logging.info("Главное меню ('main') было создано с клавишами: Жалоба, Специалисты, Вопросы.")
+logging.info("Главное меню ('main') было создано с клавишами: Жалоба, Специалисты, Компания, Вопросы.")
 
 def create_specialists_keyboard(specialists):
     """
