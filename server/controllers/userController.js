@@ -81,37 +81,47 @@ class UserController {
     }
   }
 
-  // Метод для авторизации пользователя
-  async login(req, res) {
-    // Деструктуризация данных для получения email и пароля
+  async loginClient(req, res) 
+  {
     const { email, password } = req.body;
-    console.log('Запрос на авторизацию пользователя получен');
-    console.log('Тело запроса:', req.body);
+    console.log('Запрос на авторизацию клиента:', email);
 
     try {
-      // Поиск пользователя в базе данных по email
-      console.log('Ищем пользователя по email:', email);
-      const user = await Users.findOne({ where: { email } });
+        const user = await Users.findOne({ where: { email } });
+        if (!user) {
+            console.log('Ошибка: клиент не найден');
+            return res.status(401).json({ message: 'Неверный email или пароль' });
+        }
 
-      // Если пользователь не найден или пароли не совпадают, возвращаем ошибку авторизации
-      if (!user || !(await bcrypt.compare(password, user.password))) {
-        console.log('Ошибка: неверный email или пароль');
-        return res.status(401).json({ message: 'Неверный email или пароль' });
-      }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            console.log('Ошибка: неверный пароль');
+            return res.status(401).json({ message: 'Неверный email или пароль' });
+        }
 
-      // Генерация JWT токена
-      console.log('Генерация JWT токена для пользователя с ID:', user.user_id);
-      const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      
-      // Отправка токена в ответе на успешную авторизацию
-      console.log('JWT токен успешно сгенерирован');
-      return res.json({ token });
+        const client = await Clients.findOne({ where: { user_id: user.user_id } });
+        if (!client) {
+            console.log('Ошибка: пользователь не является клиентом');
+            return res.status(403).json({ message: 'Доступ запрещен' });
+        }
+
+        const token = jwt.sign({ id: user.user_id, role: 'client' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Strict',
+            maxAge: 3600000,
+        });
+
+        console.log(`Клиент ${user.user_id} успешно вошел`);
+        return res.json({ message: 'Успешный вход клиента' });
     } catch (error) {
-      console.error('Ошибка авторизации:', error);
-      console.log('Ошибка сервера при авторизации');
-      return res.status(500).json({ message: 'Ошибка сервера' });
+        console.error('Ошибка авторизации клиента:', error);
+        return res.status(500).json({ message: 'Ошибка сервера' });
     }
-  }
+};
+
 
   // Метод для получения всех пользователей
   async getAll(req, res) {
@@ -132,12 +142,10 @@ class UserController {
     console.log('Запрос на проверку роли администратора');
     return res.json({ message: 'true' });
   }
-
-  // Метод для выхода пользователя
-  async logout(req, res) {
-    console.log('Запрос на выход пользователя');
-    return res.json({ message: 'Выход выполнен' });
-  }
+    logout(req, res) {
+    res.clearCookie('token');
+    res.json({ message: 'Вы успешно вышли' });
+};
 }
 
 // Экспорт экземпляра контроллера для использования в других частях приложения

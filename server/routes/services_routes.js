@@ -9,7 +9,7 @@ router.get('/', serviceController.getAll);
 // Этот маршрут вызывает метод getAll из контроллера, который возвращает список всех услуг.
 
 // Роут для получения услуги по ID
-router.get('/:id', serviceController.getById); 
+router.get('/:service_id', serviceController.getById); 
 // Этот маршрут вызывает метод getById из контроллера, который возвращает услугу по переданному ID.
 // В запросе передается ID услуги, который будет использован для поиска в базе данных.
 

@@ -21,18 +21,18 @@ class ServiceController {
   async getById(req, res, next) {
     console.log('Запрос на получение услуги по ID получен.'); // Логируем начало обработки запроса.
 
-    const { id } = req.params; // Извлекаем параметр ID из запроса.
-    console.log(`Ищем услугу с ID: ${id}`); // Логируем ID, который ищется.
+    const { service_id } = req.params; // Извлекаем параметр ID из запроса.
+    console.log(`Ищем услугу с ID: ${service_id}`); // Логируем ID, который ищется.
 
     try {
-      const service = await Services.findOne({ where: { id } }); // Ищем запись услуги с указанным ID.
+      const service = await Services.findOne({ where: { service_id} }); // Ищем запись услуги с указанным ID.
 
       if (!service) {
-        console.warn(`Услуга с ID ${id} не найдена.`); // Логируем предупреждение, если запись не найдена.
+        console.warn(`Услуга с ID ${service_id} не найдена.`); // Логируем предупреждение, если запись не найдена.
         return next(ApiError.notFound('Service not found')); // Возвращаем ошибку 404 через middleware.
       }
 
-      console.log(`Услуга с ID ${id} успешно найдена.`); // Логируем успешный поиск услуги.
+      console.log(`Услуга с ID ${service_id} успешно найдена.`); // Логируем успешный поиск услуги.
       return res.json(service); // Отправляем найденную услугу клиенту в формате JSON.
     } catch (error) {
       console.error('Ошибка при поиске услуги:', error); // Логируем ошибку.

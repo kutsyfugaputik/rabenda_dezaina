@@ -64,28 +64,28 @@ class FeedbackController {
     async getById(req, res, next) { 
         // Асинхронный метод для получения конкретного отзыва по его `id`.
 
-        console.log(`Запрос на получение отзыва с ID: ${req.params.id}`);
+        console.log(`Запрос на получение отзыва с ID: ${req.params.feedback_id}`);
         // Логируем начало процесса получения отзыва по ID.
 
-        const { id } = req.params; 
+        const { feedback_id } = req.params; 
         // Извлекаем параметр `id` из URL запроса. Обычно он передаётся как часть маршрута, например, `/feedback/:id`.
 
         try {
-            const feedback = await Feedback.findOne({ where: { id } }); 
+            const feedback = await Feedback.findOne({ where: { feedback_id} }); 
             // Используем метод `findOne` модели `Feedback` для поиска записи по указанному `id`.
-            // Условие поиска задаётся через объект `{ where: { id } }`.
+            // Условие поиска задаётся через объект `{ where: { feedback_id } }`.
 
             if (!feedback) { 
-                // Проверяем, существует ли отзыв с данным `id`.
+                // Проверяем, существует ли отзыв с данным `feedback_id`.
 
-                console.warn(`Отзыв с ID ${id} не найден`);
+                console.warn(`Отзыв с ID ${feedback_id} не найден`);
                 // Логируем предупреждение, если отзыв не найден.
 
                 return next(ApiError.notFound('Feedback not found')); 
                 // Если отзыв не найден, вызываем следующий middleware с пользовательской ошибкой 404.
             }
 
-            console.log(`Отзыв с ID ${id} найден: ${JSON.stringify(feedback)}`);
+            console.log(`Отзыв с ID ${feedback_id} найден: ${JSON.stringify(feedback)}`);
             // Логируем найденный отзыв.
 
             return res.json(feedback); 

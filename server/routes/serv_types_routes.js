@@ -9,7 +9,7 @@ router.get('/', typeServiceController.getAll);
 // Этот маршрут вызывает метод getAll из контроллера, который возвращает список всех типов услуг.
 
 // Роут для получения типа услуги по ID
-router.get('/:id', typeServiceController.getById); 
+router.get('/:service_type_id', typeServiceController.getById); 
 // Этот маршрут вызывает метод getById из контроллера, который возвращает тип услуги по переданному ID.
 // В запросе передается ID типа услуги, который будет использован для поиска в базе данных.
 

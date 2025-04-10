@@ -1,0 +1,13 @@
+config:
+  target: 'http://localhost:5000'  # URL вашего сервера
+  phases:
+    - duration: 60  # продолжительность теста в секундах
+      arrivalRate: 50 # количество виртуальных пользователей, приходящих каждую секунду
+      name: "Load phase"
+    - duration: 60
+      arrivalRate: 500  # увеличение нагрузки
+      name: "Stress phase"
+scenarios:
+  - flow:
+      - get:
+          url: "/api/feedbacks"  # Путь для запроса

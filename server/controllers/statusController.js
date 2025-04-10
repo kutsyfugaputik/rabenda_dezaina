@@ -21,18 +21,18 @@ class StatusController {
   async getById(req, res, next) {
     console.log('Запрос на получение статуса по ID получен.'); // Логируем начало обработки запроса.
 
-    const { id } = req.params; // Извлекаем параметр ID из запроса.
-    console.log(`Ищем статус с ID: ${id}`); // Логируем ID, который ищется.
+    const { status_id} = req.params; // Извлекаем параметр ID из запроса.
+    console.log(`Ищем статус с ID: ${status_id}`); // Логируем ID, который ищется.
 
     try {
-      const status = await Statuses.findOne({ where: { id } }); // Ищем запись статуса с указанным ID.
+      const status = await Statuses.findOne({ where: { status_id } }); // Ищем запись статуса с указанным ID.
 
       if (!status) {
-        console.warn(`Статус с ID ${id} не найден.`); // Логируем предупреждение, если запись не найдена.
+        console.warn(`Статус с ID ${status_id} не найден.`); // Логируем предупреждение, если запись не найдена.
         return next(ApiError.notFound('Статус с таким ID не найден.')); // Возвращаем ошибку 404 через middleware.
       }
 
-      console.log(`Статус с ID ${id} успешно найден.`); // Логируем успешный поиск статуса.
+      console.log(`Статус с ID ${status_id} успешно найден.`); // Логируем успешный поиск статуса.
       return res.json(status); // Отправляем найденный статус клиенту в формате JSON.
     } catch (error) {
       console.error('Ошибка при поиске статуса:', error); // Логируем ошибку.

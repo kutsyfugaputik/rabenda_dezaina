@@ -21,18 +21,18 @@ class ServiceTypeController {
   async getById(req, res, next) {
     console.log('Запрос на получение типа услуги по ID получен.'); // Логируем начало запроса.
 
-    const { id } = req.params; // Извлекаем ID из параметров запроса.
-    console.log(`Ищем тип услуги с ID: ${id}`); // Логируем ID, который ищется.
+    const { service_type_id } = req.params; // Извлекаем ID из параметров запроса.
+    console.log(`Ищем тип услуги с ID: ${service_type_id}`); // Логируем ID, который ищется.
 
     try {
-      const serviceType = await ServiceTypes.findOne({ where: { id } }); // Ищем запись по ID в таблице типов услуг.
+      const serviceType = await ServiceTypes.findOne({ where: {service_type_id} }); // Ищем запись по ID в таблице типов услуг.
 
       if (!serviceType) {
-        console.warn(`Тип услуги с ID ${id} не найден.`); // Логируем предупреждение, если запись не найдена.
+        console.warn(`Тип услуги с ID ${service_type_id} не найден.`); // Логируем предупреждение, если запись не найдена.
         return next(ApiError.notFound('Service Type not found')); // Возвращаем ошибку 404 через middleware.
       }
 
-      console.log(`Тип услуги с ID ${id} успешно найден.`); // Логируем успешный поиск.
+      console.log(`Тип услуги с ID ${service_type_id} успешно найден.`); // Логируем успешный поиск.
       return res.json(serviceType); // Отправляем найденный тип услуги клиенту.
     } catch (error) {
       console.error('Ошибка при поиске типа услуги:', error); // Логируем ошибку.
