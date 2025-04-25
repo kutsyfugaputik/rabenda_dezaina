@@ -10,4 +10,4 @@ config:
 scenarios:
   - flow:
       - get:
-          url: "/api/feedbacks"  # Путь для запроса
+          url: "/api/"  # Путь для запроса

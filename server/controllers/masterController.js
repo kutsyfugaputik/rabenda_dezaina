@@ -1,126 +1,131 @@
-const { Masters, Users } = require('../modules/modules');
-const ApiError = require('../error/ApiError');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-const fs = require('fs');
-const path = require('path');
-const db = require('../modules/db'); // Подключаем объект базы данных, если он не был подключен ранее.
+// Импортируем необходимые модули и утилиты
+const { Masters, Users } = require('../modules/modules'); // Импорт моделей Masters и Users для взаимодействия с базой данных.
+const ApiError = require('../error/ApiError'); // Класс для генерации API-ошибок с HTTP статусами.
+const bcrypt = require('bcrypt'); // Пакет для сравнения хешированных паролей.
+const jwt = require('jsonwebtoken'); // Пакет для создания и проверки JWT-токенов.
+const logAction = require('..//utils/logger'); // Утилита для логирования действий в файл и консоль.
+const fs = require('fs'); // Модуль файловой системы.
+const path = require('path'); // Модуль для работы с путями.
+const db = require('../modules/db'); // Подключение к базе данных, если необходимо для прямых запросов.
 
 class MasterController {
-    async loginMaster(req, res) {
-        const { email, password } = req.body;
-        console.log('📥 Запрос на авторизацию мастера:', email);
-    
+    // Метод авторизации мастера
+    async loginMaster(req, res, next) {
+        const { email, password } = req.body; // Получаем email и пароль из тела запроса
+        logAction(`Запрос на авторизацию мастера: ${email}`, '📥'); // Логируем начало авторизации
+
         try {
-            console.log('🔍 Поиск пользователя по email...');
-            const user = await Users.findOne({ where: { email } });
-    
+            logAction('Поиск пользователя по email...', '🔍'); // Лог поиска пользователя
+            const user = await Users.findOne({ where: { email } }); // Поиск пользователя в таблице Users
+
             if (!user) {
-                console.log('❌ Пользователь не найден в таблице Users');
-                return res.status(401).json({ message: 'Неверный email или пароль' });
+                logAction(`Пользователь не найден: ${email}`, '❌'); // Лог — пользователь не найден
+                throw ApiError.badRequest('Неверный email или пароль'); // Ошибка — 400
             }
-    
-            console.log(`✅ Найден пользователь с id: ${user.user_id}, проверка пароля...`);
-            const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
+            logAction(`Пользователь найден (id=${user.user_id}). Проверка пароля...`, '✅'); // Лог — найден пользователь
+            const isPasswordValid = await bcrypt.compare(password, user.password); // Сравниваем введённый пароль с хешем
+
             if (!isPasswordValid) {
-                console.log(`❌ Неверный пароль для пользователя с email: ${email}`);
-                return res.status(401).json({ message: 'Неверный email или пароль' });
+                logAction(`Неверный пароль для пользователя ${email}`, '❌'); // Лог — неправильный пароль
+                throw ApiError.badRequest('Неверный email или пароль'); // Ошибка — 400
             }
-    
-            console.log('🔍 Проверка, является ли пользователь мастером...');
-            const master = await Masters.findOne({ where: { user_id: user.user_id } });
-    
+
+            logAction('Проверка роли: мастер...', '🔍'); // Лог — проверка роли
+            const master = await Masters.findOne({ where: { user_id: user.user_id } }); // Ищем мастера по user_id
+
             if (!master) {
-                console.log(`❌ Пользователь с id ${user.user_id} не найден в таблице Masters`);
-                return res.status(403).json({ message: 'Доступ запрещен' });
+                logAction(`Пользователь ${user.user_id} не является мастером`, '❌'); // Лог — не мастер
+                throw ApiError.forbidden('Доступ запрещён'); // Ошибка — 403
             }
-    
-            console.log('🔐 Генерация JWT токена...');
+
+            logAction('Генерация JWT токена...', '🔐'); // Лог — генерация токена
             const token = jwt.sign(
-                { id: user.user_id, role: 'master' },
-                process.env.JWT_SECRET,
-                { expiresIn: '1h' }
+                { id: user.user_id, role: 'master' }, // Данные для токена
+                process.env.JWT_SECRET, // Секрет для подписи
+                { expiresIn: '1h' } // Время жизни — 1 час
             );
-    
-            console.log('🍪 Установка куки с токеном...');
+
+            logAction('Установка куки с токеном...', '🍪'); // Лог — установка куки
             res.cookie('token', token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'Strict',
-                maxAge: 3600000,
+                httpOnly: true, // Только через HTTP
+                secure: true, // Только через HTTPS
+                sameSite: 'Strict', // Без межсайтовых запросов
+                maxAge: 3600000, // Время жизни — 1 час
             });
-    
-            console.log(`✅ Мастер ${user.user_id} успешно вошел`);
-            return res.json({ message: 'Успешный вход мастера' });
-    
+
+            logAction(`Мастер ${user.user_id} успешно вошёл`, '✅'); // Лог — успех
+            return res.json({ message: 'Успешный вход мастера' }); // Ответ клиенту
         } catch (error) {
-            console.error('🔥 Ошибка авторизации мастера:', error);
-            return res.status(500).json({ message: 'Ошибка сервера' });
+            logAction(`Ошибка авторизации мастера: ${error.message}`, '🔥'); // Лог ошибки
+            return next(ApiError.internal('Ошибка авторизации мастера')); // Ошибка 500 через ApiError
         }
     }
-    
 
+    // Метод получения всех мастеров
     async getAll(req, res, next) {
-        console.log('Запрошен список всех мастеров...');
+        logAction('Запрошен список всех мастеров...', '📄'); // Лог — начало запроса
 
         try {
-            const masters = await Masters.findAll();
-            console.log('Найдено мастеров:', masters.length);
-            return res.json(masters);
+            const masters = await Masters.findAll(); // Получаем всех мастеров
+            logAction(`Найдено мастеров: ${masters.length}`, '✅'); // Лог — сколько найдено
+            return res.json(masters); // Отправляем массив мастеров
         } catch (error) {
-            console.error('Ошибка при получении списка мастеров:', error);
-            return next(ApiError.internal('Не удалось получить список мастеров'));
+            logAction(`Ошибка при получении мастеров: ${error.message}`, '🔥'); // Лог ошибки
+            return next(ApiError.internal('Не удалось получить список мастеров')); // Ошибка 500 через ApiError
         }
     }
 
-    async getExampleWorks(req, res) {
+    // Метод получения примеров работ мастера
+    async getExampleWorks(req, res, next) {
         try {
-            const master_id = req.params.master_id;
-    
+            const master_id = req.params.master_id; // Извлекаем id мастера из параметров
+
             if (!master_id) {
-                return res.status(400).json({ error: 'master_id не передан' });
+                logAction('master_id не передан в запросе', '❌'); // Лог — не передан id
+                throw ApiError.badRequest('master_id не передан'); // Ошибка 400
             }
-    
+
+            logAction(`Запрос на примеры работ мастера с id: ${master_id}`, '📥'); // Лог запроса
             const result = await db.query(
                 'SELECT work_examples FROM masters WHERE master_id = $1',
                 {
                     bind: [master_id],
-                    type: db.QueryTypes.SELECT
+                    type: db.QueryTypes.SELECT,
                 }
             );
-    
+
             if (!result || result.length === 0) {
-                return res.status(404).json({ error: 'Мастер не найден' });
+                logAction(`Мастер с id ${master_id} не найден`, '❌'); // Лог — мастер не найден
+                throw ApiError.notFound('Мастер не найден'); // Ошибка 404
             }
-    
-            const masterFolderPath = result[0].work_examples; // Например: public/master_1
-            const fullPath = path.resolve(__dirname, '..', masterFolderPath); // Получаем полный путь к папке
-    
-            // Проверяем, существует ли папка
+
+            const masterFolderPath = result[0].work_examples; // Путь к работам
+            const fullPath = path.resolve(__dirname, '..', masterFolderPath); // Формируем абсолютный путь
+
             if (!fs.existsSync(fullPath)) {
-                return res.status(404).json({ error: 'Папка с фото не найдена' });
+                logAction(`Папка не найдена для мастера ${master_id}`, '❌'); // Лог — папки нет
+                throw ApiError.notFound('Папка с фото не найдена'); // Ошибка 404
             }
-    
-            // Получаем список файлов в папке
-            const files = fs.readdirSync(fullPath);
+
+            const files = fs.readdirSync(fullPath); // Получаем список файлов
             if (files.length === 0) {
-                return res.status(404).json({ error: 'Файлы не найдены' });
+                logAction(`Файлы не найдены в папке мастера ${master_id}`, '❌'); // Лог — нет файлов
+                throw ApiError.notFound('Файлы не найдены'); // Ошибка 404
             }
-    
-            // Строим URL для изображений
+
             const imageUrls = files.map(file => {
-                return `${req.protocol}://${req.get('host')}/${masterFolderPath}/${file}`;
+                return `${req.protocol}://${req.get('host')}/${masterFolderPath}/${file}`; // Формируем URL'ы
             });
-    
-            res.json({ imageUrls });
+
+            logAction(`Примеры работ мастера ${master_id} загружены`, '✅'); // Лог — успех
+            res.json({ imageUrls }); // Отправляем список URL'ов
         } catch (error) {
-            console.error('Ошибка при получении работ мастера:', error);
-            res.status(500).json({ error: 'Ошибка сервера' });
+            logAction(`Ошибка получения примеров работ: ${error.message}`, '🔥'); // Лог ошибки
+            return next(ApiError.internal('Ошибка при получении примеров работ')); // Ошибка 500 через ApiError
         }
     }
-    
 }
 
+// Экспортируем готовый экземпляр контроллера
 module.exports = new MasterController();
