@@ -82,7 +82,8 @@ class UserController {
       });
 
       logAction(`✅ Клиент ${user.user_id} успешно вошел`);
-      return res.json({ message: 'Успешный вход клиента' });
+      return res.json({ message: 'Успешный вход клиента',
+        client_id: client});
     } catch (error) {
       logAction(`❌ Ошибка авторизации: ${error.message}`, '🚨');
       return next(ApiError.internal('Ошибка сервера'));
