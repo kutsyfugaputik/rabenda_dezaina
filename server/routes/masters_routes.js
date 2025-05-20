@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // Роут для получения примеров работ мастера, доступный только для клиентов
-router.get('/:master_id/photos', authMiddleware, roleMiddleware('client'), async (req, res, next) => {
+router.get('/:master_id/photos', authMiddleware, async (req, res, next) => {
     try {
         logAction(`Получен запрос на получение примеров работ мастера с ID: ${req.params.master_id}.`, '📝'); // Логируем запрос на получение примеров работ
         await masterController.getExampleWorks(req, res); // Вызов метода getExampleWorks контроллера для получения примеров работ мастера
